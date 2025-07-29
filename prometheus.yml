@@ -1,0 +1,61 @@
+# my global config
+global:
+  scrape_interval: 15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  # scrape_timeout is set to the global default (10s).
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - "localhost:9093"
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+   - "alert_rules.yml"
+   - "recording_rules.yml"
+  # - "second_rules.yml"
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: "windows"
+    static_configs:
+      - targets: ["localhost:9182"]
+
+  - job_name: "node_exporter"
+    static_configs:
+      - targets: ["node-exporter:9100"]
+
+  - job_name: "custom_exporter"
+    static_configs:
+      - targets: ["localhost:8000"]
+
+  - job_name: 'histogram_exporter'
+    static_configs:
+      - targets: ['localhost:8001']
+
+  - job_name: 'summary_exporter'
+    static_configs:
+      - targets: ['localhost:8002']
+
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: '.*:8081'
+        action: drop
+
+  - job_name: 'nextcloud'
+    static_configs:
+      - targets: ['nextcloud-exporter:9205']
+
+  - job_name: 'custom_nextcloud'
+    static_configs:
+      - targets: ['custom-nextcloud-exporter:9206']
+
+
+
